@@ -95,10 +95,10 @@ export default class Menu extends Component {
             <Link to="/dashboard/decrypt" onClick={this.closeMenu} className={css(addFriend)}>Decrypt</Link>
           </li>
           <li className={css(componentStyles.li)}>
-            <Link to="/dashboard/clearsign" className={css(addFriend)}>Clearsign</Link>
+            <Link to="/dashboard/clearsign" onClick={this.closeMenu} className={css(addFriend)}>Clearsign</Link>
           </li>
           <li className={css(componentStyles.li)}>
-            <Link to="/dashboard/verifySignature" className={css(addFriend)}>Verify Signature</Link>
+            <Link to="/dashboard/verifySignature" onClick={this.closeMenu} className={css(addFriend)}>Verify Signature</Link>
           </li>
           <li className={css(componentStyles.li)}>
             <Link to="/dashboard/getPublicKey" onClick={this.closeMenu} className={css(addFriend)}>Copy Public Key</Link>
