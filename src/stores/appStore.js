@@ -97,6 +97,12 @@ class AppStore {
       key.keyid === keyid
     ));
   }
+
+  @action('removeFriend') removeFriend(deleteId) {
+    this.friends = this.friends.filter(friend => (
+      friend.id !== deleteId
+    ));
+  }
 }
 
 const singleton = new AppStore(appStoreHydrated || {});
