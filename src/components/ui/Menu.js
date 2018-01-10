@@ -84,6 +84,12 @@ export default class Menu extends Component {
             <Link to="/dashboard/decrypt" className={css(addFriend)}>Decrypt</Link>
           </li>
           <li className={css(componentStyles.li)}>
+            <Link to="/dashboard/clearsign" className={css(addFriend)}>Clearsign</Link>
+          </li>
+          <li className={css(componentStyles.li)}>
+            <Link to="/dashboard/verifySignature" className={css(addFriend)}>Verify Signature</Link>
+          </li>
+          <li className={css(componentStyles.li)}>
             <Link className={css(addFriend)} to="/dashboard/getPublicKey">Copy Public Key</Link>
           </li>
           <li className={css(componentStyles.li)}>

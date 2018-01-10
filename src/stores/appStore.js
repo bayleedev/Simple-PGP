@@ -74,6 +74,29 @@ class AppStore {
   @action('addFriend') addFriend(publicKey) {
     this.friends.push(readPublicKey(publicKey));
   }
+
+  @action('publicKeys') publicKeys() {
+    return [
+      this.publicKey,
+      ...this.friends.map(f => f.publicKey),
+    ].reduce((memo, publicKey) => ([
+      ...memo,
+      ...openpgp.key.readArmored(publicKey).keys,
+    ]), []);
+  }
+
+  @action('findKey') findKey(keyid) {
+    const publicKeys = [
+      this.publicKey,
+      ...this.friends.map(f => f.publicKey),
+    ];
+
+    return publicKeys.map(publicKey => (
+      readPublicKey(publicKey)
+    )).find(key => (
+      key.keyid === keyid
+    ));
+  }
 }
 
 const singleton = new AppStore(appStoreHydrated || {});

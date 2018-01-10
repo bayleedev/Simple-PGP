@@ -13,6 +13,8 @@ import EncryptMessage from 'components/EncryptMessage';
 import GetPublicKey from 'components/GetPublicKey';
 import ExportPrivateKey from 'components/ExportPrivateKey';
 import Decrypt from 'components/Decrypt';
+import VerifySignature from 'components/VerifySignature';
+import Clearsign from 'components/Clearsign';
 import Import from 'components/Import';
 import { colours } from 'utils/constants';
 
@@ -55,6 +57,8 @@ const routes = (
       <Route path="getPublicKey" component={GetPublicKey} onEnter={() => setUiMode('getPublicKey')} />
       <Route path="exportPrivateKey" component={ExportPrivateKey} onEnter={() => setUiMode('exportPrivateKey')} />
       <Route path="decrypt" component={Decrypt} onEnter={() => setUiMode('decrypt')} />
+      <Route path="verifySignature" component={VerifySignature} onEnter={() => setUiMode('verifySignature')} />
+      <Route path="clearsign" component={Clearsign} onEnter={() => setUiMode('clearsign')} />
     </Route>
   </Route>
 );
