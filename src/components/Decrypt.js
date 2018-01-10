@@ -78,8 +78,9 @@ export default class EncryptMessage extends Component {
       const appStore = this.props.appStore;
       new Promise((resolve) => {
         const privateKey = openpgp.key.readArmored(this.props.appStore.privateKey).keys[0];
+        privateKey.decrypt(this.state.passphrase);
         resolve({
-          privateKey: privateKey.decrypt(this.state.passphrase),
+          privateKey,
           message: openpgp.message.readArmored(this.state.message),
         });
       }).then(({ message, privateKey }) => (
@@ -89,8 +90,8 @@ export default class EncryptMessage extends Component {
           privateKey,
         })
       )).then(({ data, signatures }) => {
-        const keyid = signatures[0].keyid.toHex();
-        const foundKey = appStore.findKey(keyid);
+        const keyid = signatures && signatures[0] && signatures[0].keyid.toHex();
+        const foundKey = keyid && appStore.findKey(keyid);
         if (foundKey) {
           this.setState({
             message: [
@@ -103,13 +104,18 @@ export default class EncryptMessage extends Component {
             ].join('\n'),
             decrypted: true,
           });
-        } else {
+        } else if (keyid) {
           this.setState({
             message: [
               `Unknown signature: ${keyid}`,
               '',
               data,
             ].join('\n'),
+            decrypted: true,
+          });
+        } else {
+          this.setState({
+            message: data,
             decrypted: true,
           });
         }
