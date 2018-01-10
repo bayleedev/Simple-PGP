@@ -72,17 +72,39 @@ export default class EncryptMessage extends Component {
 
   decrypt = () => {
     if (this.state.message.length) {
+      const appStore = this.props.appStore;
       const privateKey = openpgp.key.readArmored(this.props.appStore.privateKey).keys[0];
       privateKey.decrypt(this.state.passphrase);
       openpgp.decrypt({
+        publicKeys: appStore.publicKeys(),
         message: openpgp.message.readArmored(this.state.message),
         privateKey,
-      }).then(plaintext => (
-        this.setState({
-          message: plaintext.data,
-          decrypted: true,
-        })
-      ));
+      }).then(({ data, signatures }) => {
+        const keyid = signatures[0].keyid.toHex();
+        const foundKey = appStore.findKey(keyid);
+        if (foundKey) {
+          this.setState({
+            message: [
+              'Verified signature from:',
+              foundKey.keyid,
+              foundKey.name,
+              foundKey.email,
+              '',
+              data,
+            ].join('\n'),
+            decrypted: true,
+          });
+        } else {
+          this.setState({
+            message: [
+              `Unknown signature: ${keyid}`,
+              '',
+              data,
+            ].join('\n'),
+            decrypted: true,
+          });
+        }
+      });
     }
   }
 

@@ -85,7 +85,7 @@ export default class VerifySignature extends Component {
         });
       } else {
         this.setState({
-          message: `Unknown signer: ${keyid}.`,
+          message: `Unknown signture: ${keyid}`,
           verified: true,
         });
       }
