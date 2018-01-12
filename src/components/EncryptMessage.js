@@ -76,6 +76,7 @@ export default class EncryptMessage extends Component {
     passphrase: '',
     encrypted: false,
     sign: false,
+    addYourself: false,
   }
 
   componentDidMount() {
@@ -84,15 +85,24 @@ export default class EncryptMessage extends Component {
   }
 
   handleSubmit = (e) => {
-    const privateKey = openpgp.key.readArmored(this.props.appStore.privateKey).keys[0];
-    if (this.state.sign) {
-      privateKey.decrypt(this.state.passphrase);
-    }
-    const message = this.state.message.replace(/\n?$/, '\n');
-    openpgp.encrypt({
-      data: message,
-      publicKeys: openpgp.key.readArmored(this.user.publicKey).keys,
-      privateKeys: this.state.sign && privateKey,
+    new Promise((resolve) => {
+      const privateKey = openpgp.key.readArmored(this.props.appStore.privateKey).keys[0];
+      if (this.state.sign) {
+        privateKey.decrypt(this.state.passphrase);
+      }
+      const publicKeys = this.state.addYourself ? [
+        ...openpgp.key.readArmored(this.user.publicKey).keys,
+        ...openpgp.key.readArmored(this.props.appStore.publicKey).keys,
+      ] : [
+        ...openpgp.key.readArmored(this.user.publicKey).keys,
+      ];
+      const message = this.state.message.replace(/\n?$/, '\n');
+
+      resolve(openpgp.encrypt({
+        data: message,
+        publicKeys,
+        privateKeys: this.state.sign && privateKey,
+      }));
     }).then(ciphertext => (
       this.setState({
         message: ciphertext.data,
@@ -111,9 +121,15 @@ export default class EncryptMessage extends Component {
     });
   }
 
-  handleCheckboxChange = (e) => {
+  handleSignIt = (e) => {
     this.setState({
       sign: e.target.checked,
+    });
+  }
+
+  handleAddYourself = (e) => {
+    this.setState({
+      addYourself: e.target.checked,
     });
   }
 
@@ -164,12 +180,26 @@ export default class EncryptMessage extends Component {
               <div className={css(componentStyles.signWrapper)}>
                 <input
                   className={css(componentStyles.checkbox)}
-                  id="password"
+                  id="signIt"
                   type="checkbox"
-                  onChange={this.handleCheckboxChange}
+                  onChange={this.handleSignIt}
                   checked={this.state.sign}
                 />
-                <label htmlFor="password" className={css(componentStyles.checkboxSpan)}>Sign Message?</label>
+                <label htmlFor="signIt" className={css(componentStyles.checkboxSpan)}>Sign Message?</label>
+              </div>
+            )
+          }
+          {
+            !this.state.encrypted && (
+              <div className={css(componentStyles.signWrapper)}>
+                <input
+                  className={css(componentStyles.checkbox)}
+                  id="addYourself"
+                  type="checkbox"
+                  onChange={this.handleAddYourself}
+                  checked={this.state.addYourself}
+                />
+                <label htmlFor="addYourself" className={css(componentStyles.checkboxSpan)}>Add yourself as a recepient?</label>
               </div>
             )
           }
