@@ -4,7 +4,7 @@ import { inject, observer, PropTypes as MobxPropTypes } from 'mobx-react';
 import { colours } from 'utils/constants';
 
 const openpgp = require('openpgp');
-const { remote } = require('electron');
+const { remote, clipboard } = require('electron');
 
 const { dialog } = remote;
 
@@ -103,6 +103,7 @@ export default class EncryptMessage extends Component {
               data,
             ].join('\n'),
             decrypted: true,
+            passphrase: '',
           });
         } else if (keyid) {
           this.setState({
@@ -112,11 +113,13 @@ export default class EncryptMessage extends Component {
               data,
             ].join('\n'),
             decrypted: true,
+            passphrase: '',
           });
         } else {
           this.setState({
             message: data,
             decrypted: true,
+            passphrase: '',
           });
         }
       }).catch((err) => {
@@ -126,6 +129,7 @@ export default class EncryptMessage extends Component {
   }
 
   clearMessage = () => {
+    clipboard.writeText(this.state.message);
     this.setState({
       message: '',
       decrypted: false,
@@ -134,7 +138,9 @@ export default class EncryptMessage extends Component {
 
   render() {
     const button = this.state.decrypted ? (
-      <a onClick={this.clearMessage} className={css(componentStyles.button)}>Clear</a>
+      <a onClick={this.clearMessage} className={css(componentStyles.button)}>
+        Copy to clipboard and clear
+      </a>
     ) : (
       <a onClick={this.decrypt} className={css(componentStyles.button)}>Decrypt</a>
     );
